@@ -87,10 +87,16 @@ export default function DissertationSurveyForm() {
           { id: "E20", label: "SPI menanggapi pertanyaan dan permintaan komunikasi dari Komite Audit secara memadai dan tepat waktu." },
         ],
       },
+    ],
+    []
+  );
+
+  const sections2: Section[] = useMemo(
+    () => [
 
       // INTERAKSI AUDITOR INTERNAL DENGAN AUDITOR EKSTERNAL (14 items)
       {
-        id: "A-EXT",
+        id: "A",
         title: "Penggunaan Pekerjaan Fungsi Audit Internal dalam Audit Laporan Keuangan",
         rows: [
           { id: "X1", label: "SPI dan KAP melakukan koordinasi mengenai hasil pekerjaan Fungsi Audit Internal yang dapat digunakan oleh KAP dalam mendukung perencanaan, memberikan petunjuk dalam memperoleh bukti, maupun melakukan asistensi penerapan pengendalian internal dalam rangka audit laporan keuangan." },
@@ -98,7 +104,7 @@ export default function DissertationSurveyForm() {
         ],
       },
       {
-        id: "B-EXT",
+        id: "B",
         title: "Penilaian atas Obyektivitas dan Kompetensi dari Fungsi Audit Internal",
         rows: [
           { id: "X3", label: "SPI dan KAP mendiskusikan mengenai ketersediaan sumber daya dan kompetensi secara memadai dan tepat yang dimiliki oleh fungsi audit internal berdasarkan ukuran dan kompleksitas Perusahaan." },
@@ -108,7 +114,7 @@ export default function DissertationSurveyForm() {
         ],
       },
       {
-        id: "C-EXT",
+        id: "C",
         title: "Akses terhadap Laporan Hasil Audit",
         rows: [
           { id: "X8", label: "SPI memberikan akses kepada KAP atas Laporan Hasil Audit Internal yang relevan dengan proses audit laporan keuangan." },
@@ -117,7 +123,7 @@ export default function DissertationSurveyForm() {
         ],
       },
       {
-        id: "D-EXT",
+        id: "D",
         title: "Koordinasi antara Auditor Internal dan Auditor Eksternal",
         rows: [
           { id: "X11", label: "SPI dan KAP menjadwalkan diskusi secara rutin selama proses audit untuk memastikan koordinasi atas hasil pekerjaan audit dan penyelesaian atas kendala dalam kegiatan audit secara efektif dan efisien." },
@@ -300,16 +306,11 @@ export default function DissertationSurveyForm() {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="mt-6 flex items-start gap-3">
-                  <input id="consent" type="checkbox" checked={identity.consent} onChange={(e) => setIdentity({ ...identity, consent: e.target.checked })} className="mt-1 h-5 w-5 rounded border-slate-300" />
-                  <label htmlFor="consent" className="text-sm text-slate-800">Saya setuju untuk berpartisipasi dalam penelitian ini dan menyetujui penggunaan tanggapan saya secara anonim untuk tujuan penelitian.</label>
-                </div> */}
               </section>
 
               {/* Card: Likert Table */}
               <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
-                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">Kuesioner (Skala Likert)</h2>
+                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">INTERAKSI AUDITOR INTERNAL DENGAN AUDITOR EKSTERNAL</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
@@ -324,59 +325,139 @@ export default function DissertationSurveyForm() {
                       </tr>
                     </thead>
                     <tbody>
-                      {sections.map((sec) => (
-                        <React.Fragment key={sec.id}>
-                          <tr>
-                            <td colSpan={2 + likertChoices.length} className="px-3 py-2 text-left text-sm font-semibold text-slate-900 bg-slate-50 rounded-xl border border-slate-200">{sec.id}. {sec.title}</td>
-                          </tr>
-                          {sec.rows.map((row, idx) => (
-                            <tr key={row.id} className="bg-white rounded-xl shadow-sm">
-                              <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{idx + 1}</td>
-                              <td className="align-top px-3 py-3 text-sm text-slate-900 border-t border-b border-slate-200 max-w-xl">{row.label}</td>
-                              {likertChoices.map((c) => (
-                                <td key={c.key} className="px-3 py-3 text-center border border-slate-200">
-                                  <input
-                                    type="radio"
-                                    name={row.id}
-                                    aria-label={`${row.label} — ${c.text}`}
-                                    checked={answers[row.id] === c.key}
-                                    onChange={() => setAnswer(row.id, c.key)}
-                                    className="h-5 w-5 accent-blue-600"
-                                  />
-                                </td>
-                              ))}
+                      {sections2.map((sec, secIdx) => {
+                        const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                        return (
+                          <React.Fragment key={sec.id}>
+                            <tr>
+                              <td colSpan={2 + likertChoices.length} className="px-3 py-2 text-left text-sm font-semibold text-slate-900 bg-slate-50 rounded-xl border border-slate-200">{sec.id}. {sec.title}</td>
                             </tr>
-                          ))}
-                        </React.Fragment>
-                      ))}
+                            {sec.rows.map((row, idx) => (
+                              <tr key={row.id} className="bg-white rounded-xl shadow-sm">
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{prevRowCount + idx + 1}</td>
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border-t border-b border-slate-200 max-w-xl">{row.label}</td>
+                                {likertChoices.map((c) => (
+                                  <td key={c.key} className="px-3 py-3 text-center border border-slate-200">
+                                    <input
+                                      type="radio"
+                                      name={row.id}
+                                      aria-label={`${row.label} — ${c.text}`}
+                                      checked={answers[row.id] === c.key}
+                                      onChange={() => setAnswer(row.id, c.key)}
+                                      className="h-5 w-5 accent-blue-600"
+                                    />
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
 
                 {/* Mobile helper: stacked cards */}
                 <div className="mt-6 grid gap-4 sm:hidden">
-                  {sections.map((sec) => (
-                    <div key={sec.id} className="rounded-xl border border-slate-200 p-4">
-                      <p className="text-sm font-semibold text-slate-900 mb-2">{sec.id}. {sec.title}</p>
-                      {sec.rows.map((row, idx) => (
-                        <div key={row.id} className="rounded-lg border border-slate-200 p-3 mb-3">
-                          <p className="text-[13px] text-slate-900 mb-3">{idx + 1}. {row.label}</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {likertChoices.map((c) => (
-                              <label key={c.key} className={`${answers[row.id] === c.key ? "border-blue-500 ring-2 ring-blue-200" : "border-slate-200"} flex items-center gap-2 rounded-lg border px-2 py-2`}>
-                                <input type="radio" name={`m-${row.id}`} checked={answers[row.id] === c.key} onChange={() => setAnswer(row.id, c.key)} className="h-4 w-4 accent-blue-600" />
-                                <span className="text-xs text-slate-900">{c.text}</span>
-                              </label>
-                            ))}
+                  {sections.map((sec, secIdx) => {
+                    const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                    return (
+                      <div key={sec.id} className="rounded-xl border border-slate-200 p-4">
+                        <p className="text-sm font-semibold text-slate-900 mb-2">{sec.id}. {sec.title}</p>
+                        {sec.rows.map((row, idx) => (
+                          <div key={row.id} className="rounded-lg border border-slate-200 p-3 mb-3">
+                            <p className="text-[13px] text-slate-900 mb-3">{prevRowCount + idx + 1}. {row.label}</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {likertChoices.map((c) => (
+                                <label key={c.key} className={`${answers[row.id] === c.key ? "border-blue-500 ring-2 ring-blue-200" : "border-slate-200"} flex items-center gap-2 rounded-lg border px-2 py-2`}>
+                                  <input type="radio" name={`m-${row.id}`} checked={answers[row.id] === c.key} onChange={() => setAnswer(row.id, c.key)} className="h-4 w-4 accent-blue-600" />
+                                  <span className="text-xs text-slate-900">{c.text}</span>
+                                </label>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                        ))}
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
 
-              
+              <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
+                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI AUDITOR INTERNAL DENGAN KOMITE AUDIT</h2>
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full border-separate border-spacing-y-2">
+                    <thead>
+                      <tr>
+                        <th className="sticky left-0 z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 rounded-l-xl border border-slate-200">No</th>
+                        <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 border-t border-b border-slate-200">Pertanyaan</th>
+                        {likertChoices.map((c) => (
+                          <th key={c.key} className="px-3 py-3 text-xs sm:text-sm font-semibold text-slate-900 text-center border border-slate-200">
+                            {c.text}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sections.map((sec, secIdx) => {
+                        const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                        return (
+                          <React.Fragment key={sec.id}>
+                            <tr>
+                              <td colSpan={2 + likertChoices.length} className="px-3 py-2 text-left text-sm font-semibold text-slate-900 bg-slate-50 rounded-xl border border-slate-200">{sec.id}. {sec.title}</td>
+                            </tr>
+                            {sec.rows.map((row, idx) => (
+                              <tr key={row.id} className="bg-white rounded-xl shadow-sm">
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{prevRowCount + idx + 1}</td>
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border-t border-b border-slate-200 max-w-xl">{row.label}</td>
+                                {likertChoices.map((c) => (
+                                  <td key={c.key} className="px-3 py-3 text-center border border-slate-200">
+                                    <input
+                                      type="radio"
+                                      name={row.id}
+                                      aria-label={`${row.label} — ${c.text}`}
+                                      checked={answers[row.id] === c.key}
+                                      onChange={() => setAnswer(row.id, c.key)}
+                                      className="h-5 w-5 accent-blue-600"
+                                    />
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile helper: stacked cards */}
+                <div className="mt-6 grid gap-4 sm:hidden">
+                  {sections.map((sec, secIdx) => {
+                    const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                    return (
+                      <div key={sec.id} className="rounded-xl border border-slate-200 p-4">
+                        <p className="text-sm font-semibold text-slate-900 mb-2">{sec.id}. {sec.title}</p>
+                        {sec.rows.map((row, idx) => (
+                          <div key={row.id} className="rounded-lg border border-slate-200 p-3 mb-3">
+                            <p className="text-[13px] text-slate-900 mb-3">{prevRowCount + idx + 1}. {row.label}</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {likertChoices.map((c) => (
+                                <label key={c.key} className={`${answers[row.id] === c.key ? "border-blue-500 ring-2 ring-blue-200" : "border-slate-200"} flex items-center gap-2 rounded-lg border px-2 py-2`}>
+                                  <input type="radio" name={`m-${row.id}`} checked={answers[row.id] === c.key} onChange={() => setAnswer(row.id, c.key)} className="h-4 w-4 accent-blue-600" />
+                                  <span className="text-xs text-slate-900">{c.text}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+
+
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">

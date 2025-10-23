@@ -286,16 +286,11 @@ export default function DissertationSurveyForm() {
                     </div>
                   </div>
                 </div>
-
-                <div className="mt-6 flex items-start gap-3">
-                  <input id="consent" type="checkbox" checked={identity.consent} onChange={(e) => setIdentity({ ...identity, consent: e.target.checked })} className="mt-1 h-5 w-5 rounded border-slate-300" />
-                  <label htmlFor="consent" className="text-sm text-slate-800">Saya setuju untuk berpartisipasi dalam penelitian ini dan menyetujui penggunaan tanggapan saya secara anonim untuk tujuan penelitian.</label>
-                </div>
               </section>
 
               {/* Card: Likert Table */}
               <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
-                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">Kuesioner (Skala Likert)</h2>
+                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI KOMITE AUDIT DENGAN AUDITOR EKSTERNAL</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
