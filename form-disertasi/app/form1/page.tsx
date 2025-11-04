@@ -1,12 +1,23 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import Image from "next/image";
 
 // -----------------------------
 // Helper Types
 // -----------------------------
 
 type LikertChoice = "SS" | "S" | "AS" | "ATS" | "TS" | "STS"; // Sangat Setuju ... Sangat Tidak Setuju
+
+// Mapping from Likert choice to numeric value
+const LIKERT_VALUES: Record<LikertChoice, number> = {
+  SS: 1,
+  S: 2,
+  AS: 3,
+  ATS: 4,
+  TS: 5,
+  STS: 6,
+};
 
 interface QuestionRow {
   id: string;
@@ -179,6 +190,7 @@ export default function DissertationSurveyForm() {
   );
 
   // --- Form state ---
+  const [showIntro, setShowIntro] = useState(true);
   const [identity, setIdentity] = useState({
     nama: "",
     perusahaan: "",
@@ -223,25 +235,64 @@ export default function DissertationSurveyForm() {
       alert("Silakan lengkapi jenis kelamin, umur, dan pendidikan terakhir Anda.");
       return;
     }
-    if (!identity.consent) {
-      alert("Silakan berikan persetujuan untuk melanjutkan.");
-      return;
-    }
+    // Consent checkbox is optional/commented out, so skip this validation
+    // if (!identity.consent) {
+    //   alert("Silakan berikan persetujuan untuk melanjutkan.");
+    //   return;
+    // }
     if (missing.length) {
       alert(`Silakan jawab semua pertanyaan Likert. Belum dijawab: ${missing.join(", ")}`);
       return;
     }
 
+    // Convert Likert choices to numeric values
+    const numericAnswers: Record<string, number> = {};
+    Object.entries(answers).forEach(([questionId, choice]) => {
+      if (choice) {
+        numericAnswers[questionId] = LIKERT_VALUES[choice];
+      }
+    });
+
     const payload = {
       identity,
-      answers,
+      answers: numericAnswers,
+      answersRaw: answers, // Keep original choices for reference
       openEnded,
       submittedAt: new Date().toISOString(),
     };
 
+    // Console log all selected answers with detailed formatting
+    console.group("📋 FORM SUBMISSION DATA");
+    console.log("⏰ Submitted At:", payload.submittedAt);
+
+    console.group("👤 Respondent Identity");
+    console.log("Nama:", identity.nama);
+    console.log("Perusahaan:", identity.perusahaan);
+    console.log("Jabatan:", identity.jabatan);
+    console.log("Jenis Kelamin:", identity.jenisKelamin);
+    console.log("Umur:", identity.umur);
+    console.log("Pendidikan:", identity.pendidikan);
+    console.groupEnd();
+
+    console.group("📊 Survey Answers (Total: " + Object.keys(numericAnswers).length + ")");
+    Object.entries(answers).forEach(([questionId, answer]) => {
+      if (answer) {
+        console.log(`${questionId}: ${answer} (${LIKERT_VALUES[answer]})`);
+      }
+    });
+    console.groupEnd();
+
+    console.group("💬 Open-Ended Responses");
+    console.log("Comments:", openEnded.comments || "(empty)");
+    console.log("Suggestions:", openEnded.suggestions || "(empty)");
+    console.groupEnd();
+
+    console.log("📦 Full Payload (for API):");
+    console.log(JSON.stringify(payload, null, 2));
+    console.groupEnd();
+
     // For demo: show JSON. Replace with real API call (e.g., fetch('/api/survey', {method:'POST', body: JSON.stringify(payload)}))
-    console.log(payload);
-    alert("Terima kasih! Periksa console untuk melihat data yang dikirim.");
+    alert("Terima kasih! Data berhasil dikumpulkan. Silakan periksa console browser untuk melihat detail data yang akan dikirim ke database.");
   }
 
   function clearForm() {
@@ -255,6 +306,70 @@ export default function DissertationSurveyForm() {
   }
 
   // --- UI ---
+  // Introduction screen
+  if (showIntro) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-x-hidden">
+        {/* Decorative background elements */}
+        <div className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(60%_60%_at_50%_20%,black,transparent)]">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-blue-200/50 blur-3xl" />
+          <div className="absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-emerald-200/50 blur-3xl" />
+        </div>
+
+        <header className="px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+          <div className="mx-auto max-w-5xl">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 text-center">Kuesioner Disertasi</h1>
+            <p className="mt-2 text-slate-800 text-center">Selamat datang di kuesioner penelitian disertasi</p>
+          </div>
+        </header>
+
+        <main className="px-4 sm:px-6 lg:px-8 pb-12 pt-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-lg backdrop-blur overflow-hidden">
+              <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-slate-50">
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Surat Pengantar Penelitian</h2>
+                <p className="text-sm text-slate-600 text-center">Kuesioner ini merupakan bagian dari penelitian disertasi yang telah disetujui dan dilegitimasi secara resmi</p>
+              </div>
+              <div className="p-4 sm:p-6">
+                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
+                  <Image
+                    src="/form1-surat.png"
+                    alt="Surat Pengantar Penelitian Disertasi"
+                    width={800}
+                    height={1100}
+                    className="w-full h-auto object-contain"
+                    priority
+                  />
+                </div>
+              </div>
+              <div className="p-6 sm:p-8 bg-slate-50 border-t border-slate-200">
+                <p className="text-sm text-slate-700 mb-6 text-center">
+                  Silakan baca surat pengantar di atas dengan seksama sebelum melanjutkan ke kuesioner.
+                </p>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => {
+                      setShowIntro(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="inline-flex items-center justify-center h-12 px-8 rounded-xl bg-slate-900 text-white font-medium shadow-lg hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all"
+                  >
+                    Lanjut ke Kuesioner →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="mx-auto max-w-5xl text-xs text-slate-700 text-center">© {new Date().getFullYear()} • Kuesioner Disertasi - DiluarPersegi</div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Main form screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-x-hidden">
       {/* Decorative background elements */}
@@ -264,14 +379,25 @@ export default function DissertationSurveyForm() {
       </div>
 
       <header className="px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Kuesioner Disertasi</h1>
-          <p className="mt-2 text-slate-800 max-w-2xl">Silakan lengkapi informasi partisipan dan berikan tanggapan terhadap pernyataan di bawah ini dengan memilih satu opsi per baris.</p>
+        <div className="mx-auto max-w-5xl flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Kuesioner Disertasi</h1>
+            <p className="mt-2 text-slate-800 max-w-2xl">Silakan lengkapi informasi partisipan dan berikan tanggapan terhadap pernyataan di bawah ini dengan memilih satu opsi per baris.</p>
+          </div>
+          <button
+            onClick={() => {
+              setShowIntro(true);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="hidden sm:inline-flex items-center justify-center h-10 px-4 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+          >
+            ← Lihat Surat Pengantar
+          </button>
         </div>
       </header>
 
       <main className="px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="mx-auto max-w-7xl flex flex-col lg:flex-row gap-8">
+        <div className="mx-auto max-w-[1600px] flex flex-col xl:flex-row gap-8">
           {/* Main form */}
           <div className="flex-1 min-w-0">
             <form onSubmit={onSubmit} className="space-y-8">
@@ -287,8 +413,12 @@ export default function DissertationSurveyForm() {
                       <input id="nama" required value={identity.nama} onChange={(e) => setIdentity({ ...identity, nama: e.target.value })} className="h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Masukkan nama Anda" />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label htmlFor="nama" className="text-sm font-medium text-slate-900">Perusahaan</label>
+                      <label htmlFor="perusahaan" className="text-sm font-medium text-slate-900">Perusahaan</label>
                       <input id="perusahaan" required value={identity.perusahaan} onChange={(e) => setIdentity({ ...identity, perusahaan: e.target.value })} className="h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Masukkan nama perusahaan" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="jabatan" className="text-sm font-medium text-slate-900">Jabatan</label>
+                      <input id="jabatan" required value={identity.jabatan} onChange={(e) => setIdentity({ ...identity, jabatan: e.target.value })} className="h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Masukkan jabatan Anda" />
                     </div>
                   </div>
 
@@ -352,8 +482,24 @@ export default function DissertationSurveyForm() {
                 </div> */}
               </section>
 
+              {/* Card: Introduction to External Auditor Questions */}
+              <section className="rounded-2xl border border-blue-200 bg-blue-50/50 shadow-sm backdrop-blur p-6 sm:p-8">
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Interaksi Komite Audit dengan Auditor Eksternal</h2>
+                <div className="prose prose-slate max-w-none text-sm leading-relaxed space-y-4">
+                  <p className="text-slate-800">
+                    Salah satu peran Komite Audit dalam kaitannya dengan auditor eksternal adalah memberikan rekomendasi atas usulan Kantor Akuntan Publik (KAP) kepada Dewan Komisaris serta memantau dan mengkaji efektivitas pelaksanaan audit laporan keuangan. Hal ini termuat dalam beberapa regulasi terkait dengan peran dan fungsi Komite Audit, yaitu Peraturan Otoritas Jasa Keuangan Nomor 55 /POJK.04/2015 tentang Pembentukan dan Pedoman Pelaksanaan Kerja Komite Audit serta Peraturan Menteri Badan Usaha Milik Negara Republik Indonesia Nomor PER-2/MBU/03/2023 tentang Pedoman Tata Kelola dan Kegiatan Korporasi Signifikan Badan Usaha Milik Negara.
+                  </p>
+                  <p className="text-slate-800">
+                    Dalam kaitannya dengan penelitian ini, proses interaksi Komite Audit lebih diarahkan pada peran penting untuk memantau proses audit atas laporan keuangan. Komite Audit juga memiliki tanggungjawab dalam proses pemilihan auditor eksternal, menyelesaikan ketidaksepakatan antara manajemen dengan auditor, serta mengawasi prosesnya.
+                  </p>
+                  <p className="text-slate-800 font-medium">
+                    Berikut ini kami sampaikan 28 (dua puluh delapan) pertanyaan yang diharapkan dapat mewakili interaksi antara Komite Audit dengan Auditor Eksternal selama kegiatan audit atas laporan keuangan.
+                  </p>
+                </div>
+              </section>
+
               {/* Card: Likert Table */}
-              <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
+              <section className="rounded-2xl border border-blue-200 bg-blue-50/40 shadow-sm backdrop-blur p-4 sm:p-6">
                 <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI KOMITE AUDIT DENGAN AUDITOR EXTERNAL</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
@@ -427,7 +573,23 @@ export default function DissertationSurveyForm() {
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
+              {/* Card: Introduction to Internal Auditor Questions */}
+              <section className="rounded-2xl border border-orange-200 bg-orange-50/50 shadow-sm backdrop-blur p-6 sm:p-8">
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Interaksi Komite Audit dengan Auditor Internal</h2>
+                <div className="prose prose-slate max-w-none text-sm leading-relaxed space-y-4">
+                  <p className="text-slate-800">
+                    Sehubungan dengan interaksi Komite Audit dengan Audit Internal, para praktisi menganggap pemanfaatan atau utilisasi Fungsi Audit Internal sebagai salah satu kegiatan Komite Audit yang krusial. Bagian penting dari tanggung jawab pemantauan dan pengawasan Komite Audit dapat mencakup reviu program dan ruang lingkup audit internal. Reviu aktif oleh Komite Audit pada proses audit internal, dalam tahap perencanaan audit internal, berkontribusi pada efektivitas keseluruhan fungsi audit internal.
+                  </p>
+                  <p className="text-slate-800">
+                    Pelaporan aktivitas audit internal melalui laporan yang disampaikan kepada Komite Audit kemungkinan besar akan kredibel jika proses audit internal dapat diandalkan dan terdapat interaksi aktif antara Komite Audit dan Auditor Internal. Dengan demikian ekspektasi dari Komite Audit dalam hal efektivitas pengendalian internal berimplikasi pada tugas audit internal untuk lebih fokus pada hal tersebut sehingga pada akhirnya dapat meningkatkan interaksi antara Komite Audit dan Fungsi Audit Internal. Interaksi antara Komite Audit dan fungsi audit internal penting bagi Komite Audit dalam memenuhi peran pengawasannya terutama dalam pengawasan atas keandalan laporan keuangan.
+                  </p>
+                  <p className="text-slate-800 font-medium">
+                    Berikut ini kami sampaikan 20 (dua puluh) pertanyaan yang diharapkan dapat mewakili interaksi antara Komite Audit dengan Fungsi Audit Internal dalam pelaksanaan kegiatan audit internal.
+                  </p>
+                </div>
+              </section>
+
+              <section className="rounded-2xl border border-orange-200 bg-orange-50/40 shadow-sm backdrop-blur p-4 sm:p-6">
                 <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI KOMITE AUDIT DENGAN AUDITOR INTERNAL</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
