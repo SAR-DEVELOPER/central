@@ -219,7 +219,7 @@ export default function DissertationSurveyForm() {
     setAnswers((prev) => ({ ...prev, [rowId]: value }));
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     // Basic client-side validation
@@ -291,8 +291,33 @@ export default function DissertationSurveyForm() {
     console.log(JSON.stringify(payload, null, 2));
     console.groupEnd();
 
-    // For demo: show JSON. Replace with real API call (e.g., fetch('/api/survey', {method:'POST', body: JSON.stringify(payload)}))
-    alert("Terima kasih! Data berhasil dikumpulkan. Silakan periksa console browser untuk melihat detail data yang akan dikirim ke database.");
+    // Submit to backend API
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+      const response = await fetch(`${apiUrl}/api/form1/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit form');
+      }
+
+      const result = await response.json();
+      console.log("✅ Server Response:", result);
+
+      alert("Terima kasih! Data Anda berhasil disimpan. Response ID: " + result.data.id);
+
+      // Optional: Clear form after successful submission
+      clearForm();
+    } catch (error) {
+      console.error("❌ Submission Error:", error);
+      alert("Maaf, terjadi kesalahan saat mengirim data. Silakan coba lagi.");
+    }
   }
 
   function clearForm() {

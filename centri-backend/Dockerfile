@@ -9,6 +9,9 @@ COPY package*.json ./
 # Development stage
 FROM base AS development
 
+# Install tini for proper signal handling
+RUN apk add --no-cache tini
+
 # Install all dependencies (including devDependencies)
 RUN npm ci
 
@@ -21,6 +24,9 @@ EXPOSE 4000
 # Set environment variables
 ENV NODE_ENV=development
 ENV PORT=4000
+
+# Use tini as entrypoint to handle signals properly
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start in development mode with watch
 CMD ["npm", "run", "start:dev"]
@@ -40,6 +46,9 @@ RUN npm run build
 # Production stage
 FROM node:20-alpine AS production
 
+# Install tini for proper signal handling
+RUN apk add --no-cache tini
+
 WORKDIR /app
 
 # Copy package files
@@ -57,6 +66,9 @@ EXPOSE 4000
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=4000
+
+# Use tini as entrypoint to handle signals properly
+ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start the application
 CMD ["node", "dist/main"]
