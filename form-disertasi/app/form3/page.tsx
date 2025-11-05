@@ -1,12 +1,24 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { sections as sectionsData, sections2 as sections2Data } from "./questions";
 
 // -----------------------------
 // Helper Types
 // -----------------------------
 
 type LikertChoice = "SS" | "S" | "AS" | "ATS" | "TS" | "STS"; // Sangat Setuju ... Sangat Tidak Setuju
+
+// Mapping from Likert choice to numeric value
+const LIKERT_VALUES: Record<LikertChoice, number> = {
+  SS: 1,
+  S: 2,
+  AS: 3,
+  ATS: 4,
+  TS: 5,
+  STS: 6,
+};
 
 interface QuestionRow {
   id: string;
@@ -26,117 +38,31 @@ interface Section {
 export default function DissertationSurveyForm() {
   // --- Configurable form schema (you can change freely) ---
   const likertChoices: { key: LikertChoice; text: string }[] = [
-    { key: "SS", text: "SS" },
-    { key: "S", text: "S" },
-    { key: "AS", text: "AS" },
-    { key: "ATS", text: "ATS" },
-    { key: "TS", text: "TS" },
-    { key: "STS", text: "STS" },
+    { key: "SS", text: "Sangat Setuju" },
+    { key: "S", text: "Setuju" },
+    { key: "AS", text: "Agak Setuju" },
+    { key: "ATS", text: "Agak Tidak Setuju" },
+    { key: "TS", text: "Tidak Setuju" },
+    { key: "STS", text: "Sangat Tidak Setuju" },
   ];
 
   const sections: Section[] = useMemo(
-    () => [
-      // INTERAKSI AUDITOR INTERNAL DENGAN KOMITE AUDIT (20 items)
-      {
-        id: "A",
-        title: "Mendiskusikan Elemen dari Perencanaan Audit Internal",
-        rows: [
-          { id: "A1", label: "SPI menyampaikan usulan rencana audit internal untuk mendapatkan masukan dari Komite Audit." },
-          { id: "A2", label: "SPI mengkomunikasikan kepada Komite Audit terkait aspek pertimbangan risiko perusahaan dalam rencana audit internal, termasuk resiko operasional, keuangan, dan kepatuhan." },
-          { id: "A3", label: "SPI mengkomunikasikan kepada Komite Audit dalam rencana auditnya mengenai rincian struktur sumber daya staf audit internal, termasuk aspek kecukupan, ketrampilan, pengalaman serta kualifikasi personil." },
-          { id: "A4", label: "Komite Audit memberi masukan dan memastikan mengenai kecukupan anggaran untuk melaksanakan rencana audit internal." },
-          { id: "A5", label: "SPI menginformasikan kepada Komite Audit atas setiap perubahan rencana kerja audit internal beserta penjelasan memadai terkait hal yang mendasari perubahan tersebut." },
-        ],
-      },
-      {
-        id: "B",
-        title: "Menilai Independensi",
-        rows: [
-          { id: "B6", label: "SPI menyampaikan pernyataan independensi Fungsi Audit Internal kepada Komite Audit paling sedikit setahun sekali." },
-          { id: "B7", label: "SPI dan Komite Audit secara periodik melakukan pembahasan mengenai proses dan hasil audit internal tanpa kehadiran Manajemen." },
-          { id: "B8", label: "SPI melaporkan kepada Komite Audit setiap aktivitas non audit yang dilakukan oleh SPI yang berpotensi menurunkan tingkat independensinya." },
-        ],
-      },
-      {
-        id: "C",
-        title: "Mengkomunikasikan Hal–Hal yang Timbul dari Hasil Audit Internal",
-        rows: [
-          { id: "C9", label: "SPI menyampaikan laporan kegiatan audit internal kepada Komite Audit secara berkala yang mencakup temuan signifikan yang berkaitan dengan kinerja operasional maupun pelaporan keuangan." },
-          { id: "C10", label: "Laporan kegiatan SPI yang disampaikan kepada Komite Audit mencakup rekomendasi yang dapat memberikan dampak perbaikan terhadap kinerja operasional maupun pelaporan keuangan." },
-          { id: "C11", label: "SPI menyampaikan kepada Komite Audit apabila terdapat perbedaan (varians) dari tujuan audit internal, jadwal kerja dan anggaran." },
-          { id: "C12", label: "SPI melaporkan kepada Komite Audit setiap adanya konflik kepentingan yang teridentifikasi serta mitigasi yang dilakukan dalam rangka menjaga independensinya." },
-          { id: "C13", label: "SPI memberikan saran adanya perubahan pada profil risiko entitas berdasarkan hasil audit internal, di dalam laporannya kepada Komite Audit." },
-        ],
-      },
-      {
-        id: "D",
-        title: "Menyampaikan Laporan secara Berkala kepada Komite Audit",
-        rows: [
-          { id: "D14", label: "SPI mengkomunikasikan kepada Komite audit mengenai hasil koordinasinya dengan Auditor Eksternal selama proses audit." },
-          { id: "D15", label: "SPI menyampaikan laporan tahunan terkait hasil kerjanya kepada Komite Audit, termasuk penilaian terhadap efektivitas sistem pengendalian organisasi." },
-          { id: "D16", label: "SPI menyampaikan kepada Komite audit mengenai pola, tren, dan masalah sistemik yang diidentifikasi dari hasil auditnya." },
-        ],
-      },
-      {
-        id: "E",
-        title: "Memfasilitasi Proses Audit Internal",
-        rows: [
-          { id: "E17", label: "SPI merespon pertanyaan dan komunikasi secara terbuka dengan Komite audit baik formal dan informal atas semua informasi yang mempengaruhi laporan keuangan terkait proses maupun kualitas audit yang dilakukan oleh KAP." },
-          { id: "E18", label: "SPI mengkomunikasikan kepada Komite Audit adanya kesulitan signifikan yang dihadapi selama audit." },
-          { id: "E19", label: "SPI mengkomunikasikan kepada Komite Audit apabila terdapat ketidaksepakatan dengan Manajemen, baik yang telah diselesaikan atau belum terselesaikan." },
-          { id: "E20", label: "SPI menanggapi pertanyaan dan permintaan komunikasi dari Komite Audit secara memadai dan tepat waktu." },
-        ],
-      },
-    ],
+    () => sectionsData,
     []
   );
 
   const sections2: Section[] = useMemo(
-    () => [
-
-      // INTERAKSI AUDITOR INTERNAL DENGAN AUDITOR EKSTERNAL (14 items)
-      {
-        id: "A",
-        title: "Penggunaan Pekerjaan Fungsi Audit Internal dalam Audit Laporan Keuangan",
-        rows: [
-          { id: "X1", label: "SPI dan KAP melakukan koordinasi mengenai hasil pekerjaan Fungsi Audit Internal yang dapat digunakan oleh KAP dalam mendukung perencanaan, memberikan petunjuk dalam memperoleh bukti, maupun melakukan asistensi penerapan pengendalian internal dalam rangka audit laporan keuangan." },
-          { id: "X2", label: "SPI dan KAP mendiskusikan mengenai usulan mekanisme koordinasi, yang mencakup waktu pelaksanaan, PIC yang terlibat, serta agenda pembahasan, sebagai fungsi counterpart dalam rangka audit laporan keuangan." },
-        ],
-      },
-      {
-        id: "B",
-        title: "Penilaian atas Obyektivitas dan Kompetensi dari Fungsi Audit Internal",
-        rows: [
-          { id: "X3", label: "SPI dan KAP mendiskusikan mengenai ketersediaan sumber daya dan kompetensi secara memadai dan tepat yang dimiliki oleh fungsi audit internal berdasarkan ukuran dan kompleksitas Perusahaan." },
-          { id: "X4", label: "KAP mendiskusikan mengenai kerangka pelaporan keuangan Perusahaan serta memastikan SPI memiliki keahlian dan pengetahuan atas kerangka pelaporan keuangan tersebut." },
-          { id: "X5", label: "SPI dan KAP mendiskusikan mengenai kecukupan pelatihan teknis dan kecakapan yang dimiliki oleh auditor internal dalam memahami komponen laporan keuangan serta risiko dan pengendalian internal yang terkait dengan laporan keuangan." },
-          { id: "X7", label: "SPI memberikan penjelasan kepada KAP mengenai metodologi dan teknik yang digunakan oleh auditor internal dalam melakukan reviu pengendalian internal dalam penyusunan laporan keuangan untuk meningkatkan kepercayaan auditor eksternal terhadap hasil pekerjaan yang dilakukan oleh auditor internal." },
-        ],
-      },
-      {
-        id: "C",
-        title: "Akses terhadap Laporan Hasil Audit",
-        rows: [
-          { id: "X8", label: "SPI memberikan akses kepada KAP atas Laporan Hasil Audit Internal yang relevan dengan proses audit laporan keuangan." },
-          { id: "X9", label: "SPI menginformasikan kepada KAP tentang hal–hal signifikan yang menjadi perhatian dari auditor internal yang mungkin berpengaruh terhadap proses audit laporan keuangan." },
-          { id: "X10", label: "KAP memberikan akses kepada SPI mengenai materi presentasi KAP dan management letter untuk digunakan sebagai masukan bagi auditor internal dalam menentukan fokus dalam pekerjaan audit internal di masa mendatang yang berkaitan dengan kelemahan pengendalian internal pada laporan keuangan." },
-        ],
-      },
-      {
-        id: "D",
-        title: "Koordinasi antara Auditor Internal dan Auditor Eksternal",
-        rows: [
-          { id: "X11", label: "SPI dan KAP menjadwalkan diskusi secara rutin selama proses audit untuk memastikan koordinasi atas hasil pekerjaan audit dan penyelesaian atas kendala dalam kegiatan audit secara efektif dan efisien." },
-          { id: "X12", label: "KAP memberikan informasi kepada SPI mengenai waktu audit secara keseluruhan, termasuk area berisiko tinggi yang mempengaruhi laporan keuangan." },
-          { id: "X13", label: "SPI dan KAP saling berbagi atau mengintegrasikan rencana auditnya." },
-          { id: "X14", label: "Terdapat dialog yang terbuka antara KAP dan SPI baik secara formal maupun informal tentang hal-hal yang mempengaruhi laporan keuangan, proses audit dan kualitas audit." },
-        ],
-      },
-    ],
+    () => sections2Data,
     []
   );
 
+  // Set document title - use useLayoutEffect to run synchronously before paint
+  useLayoutEffect(() => {
+    document.title = "Kuesioner Disertasi - Auditor Internal";
+  }, []);
+
   // --- Form state ---
+  const [showIntro, setShowIntro] = useState(true);
   const [identity, setIdentity] = useState({
     nama: "",
     perusahaan: "",
@@ -156,6 +82,7 @@ export default function DissertationSurveyForm() {
   const [answers, setAnswers] = useState<Record<string, LikertChoice | "">>(() => {
     const init: Record<string, LikertChoice | ""> = {};
     sections.forEach((s) => s.rows.forEach((r) => (init[r.id] = "")));
+    sections2.forEach((s) => s.rows.forEach((r) => (init[r.id] = "")));
     return init;
   });
 
@@ -164,7 +91,7 @@ export default function DissertationSurveyForm() {
     setAnswers((prev) => ({ ...prev, [rowId]: value }));
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     // Basic client-side validation
@@ -180,25 +107,91 @@ export default function DissertationSurveyForm() {
       alert("Silakan lengkapi jenis kelamin, umur, dan pendidikan terakhir Anda.");
       return;
     }
-    if (!identity.consent) {
-      alert("Silakan berikan persetujuan untuk melanjutkan.");
-      return;
-    }
+    // Consent checkbox is optional/commented out, so skip this validation
+    // if (!identity.consent) {
+    //   alert("Silakan berikan persetujuan untuk melanjutkan.");
+    //   return;
+    // }
     if (missing.length) {
       alert(`Silakan jawab semua pertanyaan Likert. Belum dijawab: ${missing.join(", ")}`);
       return;
     }
 
+    // Convert Likert choices to numeric values
+    const numericAnswers: Record<string, number> = {};
+    Object.entries(answers).forEach(([questionId, choice]) => {
+      if (choice) {
+        numericAnswers[questionId] = LIKERT_VALUES[choice];
+      }
+    });
+
     const payload = {
       identity,
-      answers,
+      answers: numericAnswers,
+      answersRaw: answers, // Keep original choices for reference
       openEnded,
       submittedAt: new Date().toISOString(),
     };
 
-    // For demo: show JSON. Replace with real API call (e.g., fetch('/api/survey', {method:'POST', body: JSON.stringify(payload)}))
-    console.log(payload);
-    alert("Terima kasih! Periksa console untuk melihat data yang dikirim.");
+    // Console log all selected answers with detailed formatting
+    console.group("📋 FORM SUBMISSION DATA");
+    console.log("⏰ Submitted At:", payload.submittedAt);
+
+    console.group("👤 Respondent Identity");
+    console.log("Nama:", identity.nama);
+    console.log("Perusahaan:", identity.perusahaan);
+    console.log("Jabatan:", identity.jabatan);
+    console.log("Jenis Kelamin:", identity.jenisKelamin);
+    console.log("Umur:", identity.umur);
+    console.log("Pendidikan:", identity.pendidikan);
+    console.groupEnd();
+
+    console.group("📊 Survey Answers (Total: " + Object.keys(numericAnswers).length + ")");
+    Object.entries(answers).forEach(([questionId, answer]) => {
+      if (answer) {
+        console.log(`${questionId}: ${answer} (${LIKERT_VALUES[answer]})`);
+      }
+    });
+    console.groupEnd();
+
+    console.group("💬 Open-Ended Responses");
+    console.log("Comments:", openEnded.comments || "(empty)");
+    console.log("Suggestions:", openEnded.suggestions || "(empty)");
+    console.groupEnd();
+
+    console.log("📦 Full Payload (for API):");
+    console.log(JSON.stringify(payload, null, 2));
+    console.groupEnd();
+
+    // Submit to backend API via Next.js API route (proxy)
+    try {
+      // Use relative URL - Next.js API route will proxy to backend
+      const apiUrl = '/api/form3/submit';
+      console.log('🌐 Submitting to:', apiUrl);
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit form');
+      }
+
+      const result = await response.json();
+      console.log("✅ Server Response:", result);
+
+      alert("Terima kasih! Data Anda berhasil disimpan. Response ID: " + result.data.id);
+
+      // Optional: Clear form after successful submission
+      clearForm();
+    } catch (error) {
+      console.error("❌ Submission Error:", error);
+      alert("Maaf, terjadi kesalahan saat mengirim data. Silakan coba lagi.");
+    }
   }
 
   function clearForm() {
@@ -212,6 +205,70 @@ export default function DissertationSurveyForm() {
   }
 
   // --- UI ---
+  // Introduction screen
+  if (showIntro) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-x-hidden">
+        {/* Decorative background elements */}
+        <div className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(60%_60%_at_50%_20%,black,transparent)]">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-blue-200/50 blur-3xl" />
+          <div className="absolute top-1/3 -right-24 h-96 w-96 rounded-full bg-emerald-200/50 blur-3xl" />
+        </div>
+
+        <header className="px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+          <div className="mx-auto max-w-5xl">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 text-center">Kuesioner Disertasi</h1>
+            <p className="mt-2 text-slate-800 text-center">Selamat datang di kuesioner penelitian disertasi</p>
+          </div>
+        </header>
+
+        <main className="px-4 sm:px-6 lg:px-8 pb-12 pt-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-lg backdrop-blur overflow-hidden">
+              <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-slate-50">
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Surat Pengantar Penelitian</h2>
+                <p className="text-sm text-slate-600 text-center">Kuesioner ini merupakan bagian dari penelitian disertasi yang telah disetujui dan dilegitimasi secara resmi</p>
+              </div>
+              <div className="p-4 sm:p-6">
+                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
+                  <Image
+                    src="/form1-surat.png"
+                    alt="Surat Pengantar Penelitian Disertasi"
+                    width={800}
+                    height={1100}
+                    className="w-full h-auto object-contain"
+                    priority
+                  />
+                </div>
+              </div>
+              <div className="p-6 sm:p-8 bg-slate-50 border-t border-slate-200">
+                <p className="text-sm text-slate-700 mb-6 text-center">
+                  Silakan baca surat pengantar di atas dengan seksama sebelum melanjutkan ke kuesioner.
+                </p>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => {
+                      setShowIntro(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="inline-flex items-center justify-center h-12 px-8 rounded-xl bg-slate-900 text-white font-medium shadow-lg hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all"
+                  >
+                    Lanjut ke Kuesioner →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer className="px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="mx-auto max-w-5xl text-xs text-slate-700 text-center">© {new Date().getFullYear()} • Kuesioner Disertasi - DiluarPersegi</div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Main form screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-x-hidden">
       {/* Decorative background elements */}
@@ -221,20 +278,33 @@ export default function DissertationSurveyForm() {
       </div>
 
       <header className="px-4 sm:px-6 lg:px-8 pt-8 pb-4">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Kuesioner Disertasi</h1>
-          <p className="mt-2 text-slate-800 max-w-2xl">Silakan lengkapi informasi partisipan dan berikan tanggapan terhadap pernyataan di bawah ini dengan memilih satu opsi per baris.</p>
+        <div className="mx-auto max-w-5xl flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Kuesioner Disertasi</h1>
+            <p className="mt-2 text-slate-800 max-w-2xl">Silakan lengkapi informasi partisipan dan berikan tanggapan terhadap pernyataan di bawah ini dengan memilih satu opsi per baris.</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setShowIntro(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hidden sm:inline-flex items-center justify-center h-10 px-4 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+            >
+              ← Lihat Surat Pengantar
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="mx-auto max-w-7xl flex flex-col lg:flex-row gap-8">
+        <div className="mx-auto max-w-[1600px] flex flex-col xl:flex-row gap-8">
           {/* Main form */}
           <div className="flex-1 min-w-0">
             <form onSubmit={onSubmit} className="space-y-8">
               {/* Card: Identity */}
               <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-6 sm:p-8">
-                <h2 className="text-xl font-semibold text-slate-900">IDENTITAS RESPONDEN – INTERNAL AUDIT</h2>
+                <h2 className="text-xl font-semibold text-slate-900">IDENTITAS RESPONDEN – AUDITOR INTERNAL</h2>
 
                 <div className="mt-6 space-y-6">
                   {/* Text inputs */}
@@ -306,11 +376,45 @@ export default function DissertationSurveyForm() {
                     </div>
                   </div>
                 </div>
+
+                {/* <div className="mt-6 flex items-start gap-3">
+                  <input id="consent" type="checkbox" checked={identity.consent} onChange={(e) => setIdentity({ ...identity, consent: e.target.checked })} className="mt-1 h-5 w-5 rounded border-slate-300" />
+                  <label htmlFor="consent" className="text-sm text-slate-800">Saya setuju untuk berpartisipasi dalam penelitian ini dan menyetujui penggunaan tanggapan saya secara anonim untuk tujuan penelitian.</label>
+                </div> */}
+              </section>
+
+              {/* Card: Introduction to External Auditor Questions */}
+              <section className="rounded-2xl border border-blue-200 bg-blue-50/50 shadow-sm backdrop-blur p-6 sm:p-8">
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Interaksi Auditor Internal dengan Komite Audit</h2>
+                <div className="prose prose-slate max-w-none text-sm leading-relaxed space-y-4">
+                  <p className="text-slate-800">
+                    Sehubungan dengan interaksi Audit Internal dengan Komite Audit, para praktisi
+                    menganggap pemanfaatan atau utilisasi Fungsi Audit Internal sebagai salah satu kegiatan
+                    Komite Audit yang krusial. Bagian penting dari tanggung jawab pemantauan dan
+                    pengawasan Komite Audit dapat mencakup reviu program dan ruang lingkup audit internal
+                    Reviu aktif oleh Komite Audit pada proses audit internal, dalam tahap perencanaan audit
+                    internal, berkontribusi pada efektivitas keseluruhan fungsi audit internal.
+                  </p>
+                  <p className="text-slate-800">
+                    Pelaporan aktivitas audit internal melalui laporan yang disampaikan kepada Komite Audit
+                    kemungkinan besar akan kredibel jika proses audit internal dapat diandalkan dan terdapat
+                    interaksi aktif antara Komite Audit dan Auditor Internal. Dengan demikian ekspektasi dari
+                    Komite Audit dalam hal efektivitas pengendalian internal berimplikasi pada tugas audit
+                    internal untuk lebih fokus pada hal tersebut sehingga pada akhirnya dapat meningkatkan
+                    interaksi antara Komite Audit dan Fungsi Audit Internal. Interaksi antara Komite Audit dan
+                    fungsi audit internal penting bagi Komite Audit dalam memenuhi peran pengawasannya
+                    terutama dalam pengawasan atas keandalan laporan keuangan.</p>
+                  <p className="text-slate-800 font-medium">
+                    Berikut ini kami sampaikan 20 (dua puluh) pertanyaan yang diharapkan dapat mewakili
+                    interaksi antara Fungsi Audit Internal dalam hal ini adalah Satuan Pengawas Internal (SPI)
+                    dengan Komite Audit dalam pelaksanaan kegiatan yang berkaitan dengan audit laporan
+                    keuangan.</p>
+                </div>
               </section>
 
               {/* Card: Likert Table */}
-              <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
-                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">INTERAKSI AUDITOR INTERNAL DENGAN AUDITOR EKSTERNAL</h2>
+              <section className="rounded-2xl border border-blue-200 bg-blue-50/40 shadow-sm backdrop-blur p-4 sm:p-6">
+                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI AUDITOR INTERNAL DENGAN KOMITE AUDIT</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
@@ -318,15 +422,15 @@ export default function DissertationSurveyForm() {
                         <th className="sticky left-0 z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 rounded-l-xl border border-slate-200">No</th>
                         <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 border-t border-b border-slate-200">Pertanyaan</th>
                         {likertChoices.map((c) => (
-                          <th key={c.key} className="px-3 py-3 text-xs sm:text-sm font-semibold text-slate-900 text-center border border-slate-200">
+                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-slate-900 text-center border border-slate-200 whitespace-normal leading-tight">
                             {c.text}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {sections2.map((sec, secIdx) => {
-                        const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                      {sections.map((sec, secIdx) => {
+                        const startNum = sections.slice(0, secIdx).reduce((acc, s) => acc + s.rows.length, 0);
                         return (
                           <React.Fragment key={sec.id}>
                             <tr>
@@ -334,7 +438,7 @@ export default function DissertationSurveyForm() {
                             </tr>
                             {sec.rows.map((row, idx) => (
                               <tr key={row.id} className="bg-white rounded-xl shadow-sm">
-                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{prevRowCount + idx + 1}</td>
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{startNum + idx + 1}</td>
                                 <td className="align-top px-3 py-3 text-sm text-slate-900 border-t border-b border-slate-200 max-w-xl">{row.label}</td>
                                 {likertChoices.map((c) => (
                                   <td key={c.key} className="px-3 py-3 text-center border border-slate-200">
@@ -360,13 +464,13 @@ export default function DissertationSurveyForm() {
                 {/* Mobile helper: stacked cards */}
                 <div className="mt-6 grid gap-4 sm:hidden">
                   {sections.map((sec, secIdx) => {
-                    const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                    const startNum = sections.slice(0, secIdx).reduce((acc, s) => acc + s.rows.length, 0);
                     return (
                       <div key={sec.id} className="rounded-xl border border-slate-200 p-4">
                         <p className="text-sm font-semibold text-slate-900 mb-2">{sec.id}. {sec.title}</p>
                         {sec.rows.map((row, idx) => (
                           <div key={row.id} className="rounded-lg border border-slate-200 p-3 mb-3">
-                            <p className="text-[13px] text-slate-900 mb-3">{prevRowCount + idx + 1}. {row.label}</p>
+                            <p className="text-[13px] text-slate-900 mb-3">{startNum + idx + 1}. {row.label}</p>
                             <div className="grid grid-cols-3 gap-2">
                               {likertChoices.map((c) => (
                                 <label key={c.key} className={`${answers[row.id] === c.key ? "border-blue-500 ring-2 ring-blue-200" : "border-slate-200"} flex items-center gap-2 rounded-lg border px-2 py-2`}>
@@ -383,8 +487,33 @@ export default function DissertationSurveyForm() {
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm backdrop-blur p-4 sm:p-6">
-                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI AUDITOR INTERNAL DENGAN KOMITE AUDIT</h2>
+              {/* Card: Introduction to Internal Auditor Questions */}
+              <section className="rounded-2xl border border-orange-200 bg-orange-50/50 shadow-sm backdrop-blur p-6 sm:p-8">
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Interaksi Auditor Internal dengan Auditor Eksternal</h2>
+                <div className="prose prose-slate max-w-none text-sm leading-relaxed space-y-4">
+                  <p className="text-slate-800">
+                    Dinamika lingkungan tata kelola saat ini berimplikasi pada penekanan interaksi antara
+                    Auditor Internal dan Auditor Eksternal. Hal ini disebabkan keduanya merupakan sumber
+                    daya yang krusial sebagai garis pertahanan organisasi dalam model tata kelola.
+                    Hubungan kolaboratif atau kooperatif dalam bentuk komitmen bersama dan saling berbagi
+                    informasi, akan memberikan manfaat jangka panjang bagi Perusahaan.</p>
+                  <p className="text-slate-800">
+                    Standar auditing dapat membantu meningkatkan hubungan tersebut agar lebih
+                    bermanfaat Baik Standar Profesional Akuntan Publik (SPAP) maupun Standar Audit
+                    Internal Global (Global Internal Audit Standards/GIAS), keduanya mendorong
+                    dilakukannya interaksi antara Auditor Internal dan Auditor Eksternal, yaitu SA Nomor 610
+                    tentang Penggunaan Pekerjaan Auditor Internal dalam SPAP, dan Standar 9.5 tentang
+                    Koordinasi dan Pengandalan yang ada dalam GIAS.</p>
+                  <p className="text-slate-800 font-medium">
+                    Berikut ini kami sampaikan 13 (tiga belas) pertanyaan yang diharapkan dapat mewakili
+                    interaksi antara dengan SPI sebagai Fungsi Audit Internal dengan Kantor Akuntan Publik
+                    (“KAP”) sebagai Auditor Eksternal dalam pelaksanaan kegiatan yang berkaitan dengan
+                    audit laporan keuangan.</p>
+                </div>
+              </section>
+
+              <section className="rounded-2xl border border-orange-200 bg-orange-50/40 shadow-sm backdrop-blur p-4 sm:p-6">
+                <h2 className="px-2 sm:px-3 text-xl font-semibold text-slate-900">KUESIONER INTERAKSI KOMITE AUDIT DENGAN AUDITOR INTERNAL</h2>
                 <div className="mt-4 overflow-x-auto">
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
@@ -392,15 +521,15 @@ export default function DissertationSurveyForm() {
                         <th className="sticky left-0 z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 rounded-l-xl border border-slate-200">No</th>
                         <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 border-t border-b border-slate-200">Pertanyaan</th>
                         {likertChoices.map((c) => (
-                          <th key={c.key} className="px-3 py-3 text-xs sm:text-sm font-semibold text-slate-900 text-center border border-slate-200">
+                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-slate-900 text-center border border-slate-200 whitespace-normal leading-tight">
                             {c.text}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {sections.map((sec, secIdx) => {
-                        const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                      {sections2.map((sec, secIdx) => {
+                        const startNum = sections2.slice(0, secIdx).reduce((acc, s) => acc + s.rows.length, 0);
                         return (
                           <React.Fragment key={sec.id}>
                             <tr>
@@ -408,7 +537,7 @@ export default function DissertationSurveyForm() {
                             </tr>
                             {sec.rows.map((row, idx) => (
                               <tr key={row.id} className="bg-white rounded-xl shadow-sm">
-                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{prevRowCount + idx + 1}</td>
+                                <td className="align-top px-3 py-3 text-sm text-slate-900 border border-slate-200 rounded-l-xl w-14">{startNum + idx + 1}</td>
                                 <td className="align-top px-3 py-3 text-sm text-slate-900 border-t border-b border-slate-200 max-w-xl">{row.label}</td>
                                 {likertChoices.map((c) => (
                                   <td key={c.key} className="px-3 py-3 text-center border border-slate-200">
@@ -433,14 +562,14 @@ export default function DissertationSurveyForm() {
 
                 {/* Mobile helper: stacked cards */}
                 <div className="mt-6 grid gap-4 sm:hidden">
-                  {sections.map((sec, secIdx) => {
-                    const prevRowCount = sections.slice(0, secIdx).reduce((sum, s) => sum + s.rows.length, 0);
+                  {sections2.map((sec, secIdx) => {
+                    const startNum = sections2.slice(0, secIdx).reduce((acc, s) => acc + s.rows.length, 0);
                     return (
                       <div key={sec.id} className="rounded-xl border border-slate-200 p-4">
                         <p className="text-sm font-semibold text-slate-900 mb-2">{sec.id}. {sec.title}</p>
                         {sec.rows.map((row, idx) => (
                           <div key={row.id} className="rounded-lg border border-slate-200 p-3 mb-3">
-                            <p className="text-[13px] text-slate-900 mb-3">{prevRowCount + idx + 1}. {row.label}</p>
+                            <p className="text-[13px] text-slate-900 mb-3">{startNum + idx + 1}. {row.label}</p>
                             <div className="grid grid-cols-3 gap-2">
                               {likertChoices.map((c) => (
                                 <label key={c.key} className={`${answers[row.id] === c.key ? "border-blue-500 ring-2 ring-blue-200" : "border-slate-200"} flex items-center gap-2 rounded-lg border px-2 py-2`}>
@@ -529,7 +658,7 @@ export default function DissertationSurveyForm() {
       </main>
 
       <footer className="px-4 sm:px-6 lg:px-8 pb-10">
-        <div className="mx-auto max-w-5xl text-xs text-slate-700">© {new Date().getFullYear()} • Template kuesioner. Anda dapat mengubah label, bagian, dan opsi dengan aman.</div>
+        <div className="mx-auto max-w-5xl text-xs text-slate-700">© {new Date().getFullYear()} • Kuesioner Disertasi - DiluarPersegi </div>
       </footer>
     </div>
   );

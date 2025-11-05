@@ -1,28 +1,28 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Form1Response } from './form1.entity';
-import { SubmitForm1Dto } from './dto/submit-form1.dto';
+import { Form3Response } from './form3.entity';
+import { SubmitForm3Dto } from './dto/submit-form3.dto';
 
 @Injectable()
-export class Form1Service {
-  private readonly logger = new Logger(Form1Service.name);
+export class Form3Service {
+  private readonly logger = new Logger(Form3Service.name);
 
   constructor(
-    @InjectRepository(Form1Response)
-    private readonly form1Repository: Repository<Form1Response>,
+    @InjectRepository(Form3Response)
+    private readonly form3Repository: Repository<Form3Response>,
   ) {}
 
   /**
-   * Submit a new Form1 response
+   * Submit a new Form3 response
    */
   async submitForm(
-    dto: SubmitForm1Dto,
+    dto: SubmitForm3Dto,
     ipAddress?: string,
     userAgent?: string,
-  ): Promise<Form1Response> {
+  ): Promise<Form3Response> {
     try {
-      const response = this.form1Repository.create({
+      const response = this.form3Repository.create({
         nama: dto.identity.nama,
         perusahaan: dto.identity.perusahaan,
         jabatan: dto.identity.jabatan,
@@ -38,7 +38,7 @@ export class Form1Service {
         userAgent,
       });
 
-      return await this.form1Repository.save(response);
+      return await this.form3Repository.save(response);
     } catch (error) {
       this.logger.error('Failed to save form response', error);
       throw new InternalServerErrorException('Failed to save form response');
@@ -48,8 +48,8 @@ export class Form1Service {
   /**
    * Get all form responses (for admin/research purposes)
    */
-  async getAllResponses(): Promise<Form1Response[]> {
-    return await this.form1Repository.find({
+  async getAllResponses(): Promise<Form3Response[]> {
+    return await this.form3Repository.find({
       order: { submittedAt: 'DESC' },
     });
   }
@@ -57,30 +57,30 @@ export class Form1Service {
   /**
    * Get a single response by ID
    */
-  async getResponseById(id: string): Promise<Form1Response | null> {
-    return await this.form1Repository.findOne({ where: { id } });
+  async getResponseById(id: string): Promise<Form3Response | null> {
+    return await this.form3Repository.findOne({ where: { id } });
   }
 
   /**
    * Get statistics (optional - for analytics)
    */
   async getStatistics(): Promise<any> {
-    const total = await this.form1Repository.count();
-    const byGender = await this.form1Repository
+    const total = await this.form3Repository.count();
+    const byGender = await this.form3Repository
       .createQueryBuilder('response')
       .select('response.jenisKelamin', 'jenisKelamin')
       .addSelect('COUNT(*)', 'count')
       .groupBy('response.jenisKelamin')
       .getRawMany();
 
-    const byAge = await this.form1Repository
+    const byAge = await this.form3Repository
       .createQueryBuilder('response')
       .select('response.umur', 'umur')
       .addSelect('COUNT(*)', 'count')
       .groupBy('response.umur')
       .getRawMany();
 
-    const byEducation = await this.form1Repository
+    const byEducation = await this.form3Repository
       .createQueryBuilder('response')
       .select('response.pendidikan', 'pendidikan')
       .addSelect('COUNT(*)', 'count')
@@ -95,3 +95,4 @@ export class Form1Service {
     };
   }
 }
+
