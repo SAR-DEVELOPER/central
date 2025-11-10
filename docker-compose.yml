@@ -52,12 +52,12 @@ services:
     build:
       context: ./centri-backend
       dockerfile: Dockerfile
-      target: ${BACKEND_TARGET:-development}
+      target: ${BACKEND_TARGET:-production}
     container_name: centri-backend
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=4000
       - FRONTEND_URL=http://localhost:3044,http://127.0.0.1:3044
       # PostgreSQL Configuration
@@ -69,9 +69,6 @@ services:
       - DB_DATABASE=${POSTGRES_DB:-centri_db}
       # MongoDB Configuration
       - MONGODB_URI=mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-mongo_secure_password_change_me}@mongodb:27017/${MONGO_DB:-centri_db}?authSource=admin
-    volumes:
-      # Mount source code for development mode
-      - ./centri-backend:/app
     networks:
       - app-network
     depends_on:
@@ -86,17 +83,14 @@ services:
     build:
       context: ./form-disertasi
       dockerfile: Dockerfile
-      target: ${FRONTEND_TARGET:-development}
+      target: ${FRONTEND_TARGET:-production}
     container_name: form-disertasi
     ports:
       - "${FRONTEND_PORT:-3044}:3044"
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:4000}
       - BACKEND_URL=http://backend:4000
-    volumes:
-      # Mount source code for development mode
-      - ./form-disertasi:/app
     networks:
       - app-network
     depends_on:

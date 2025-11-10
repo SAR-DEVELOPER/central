@@ -52,7 +52,7 @@ export const sections: Section[] = [
         id: "D",
         title: "Menilai Independensi Auditor",
         rows: [
-            { id: "D17", label: "KAP mengkonfirmasi independensinya dalam bentuk pernyataan tertulis kepada Komite Audit pada setiap pertemuan dengan Komite Audit." },
+            { id: "D17", label: "KAP mengkonfirmasi independensinya kepada Komite Audit pada setiap pertemuan dengan Komite Audit." },
             { id: "D18", label: "KAP mengkomunikasikan kepada Komite Audit atas hal yang mungkin berdampak terhadap independensi KAP, seperti contoh adanya pemberian jasa non-asurans kepada Perusahaan, tenggat waktu yang ketat, pemberian fasilitas kepada auditor di lapangan, hubungan pribadi auditor dengan manajemen serta potensi employment offering." },
             { id: "D19", label: "KAP meminta persetujuan kepada Komite Audit apabila terdapat jasa non assurans (nonaudit) yang diberikan oleh KAP kepada Perusahaan atau Group Perusahaan." },
         ],

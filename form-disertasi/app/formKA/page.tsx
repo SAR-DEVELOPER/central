@@ -218,7 +218,6 @@ export default function DissertationSurveyForm() {
         <header className="px-4 sm:px-6 lg:px-8 pt-8 pb-4">
           <div className="mx-auto max-w-5xl">
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 text-center">Kuesioner Disertasi</h1>
-            <p className="mt-2 text-slate-800 text-center">Selamat datang di kuesioner penelitian disertasi</p>
           </div>
         </header>
 
@@ -227,7 +226,6 @@ export default function DissertationSurveyForm() {
             <div className="rounded-2xl border border-slate-200 bg-white shadow-lg backdrop-blur overflow-hidden">
               <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-slate-50">
                 <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Surat Pengantar Penelitian</h2>
-                <p className="text-sm text-slate-600 text-center">Kuesioner ini merupakan bagian dari penelitian disertasi yang telah disetujui dan dilegitimasi secara resmi</p>
               </div>
               <div className="p-4 sm:p-6">
                 <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
@@ -406,10 +404,10 @@ export default function DissertationSurveyForm() {
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
                       <tr>
-                        <th className="sticky left-0 z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 rounded-l-xl border border-slate-200">No</th>
-                        <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 border-t border-b border-slate-200">Pertanyaan</th>
+                        <th className="sticky left-0 z-10 bg-blue-900 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-white rounded-l-xl border border-blue-800">No</th>
+                        <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-blue-900 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-white border-t border-b border-blue-800">Pertanyaan</th>
                         {likertChoices.map((c) => (
-                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-slate-900 text-center border border-slate-200 whitespace-normal leading-tight">
+                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-white bg-blue-900 text-center border border-blue-800 whitespace-normal leading-tight">
                             {c.text}
                           </th>
                         ))}
@@ -496,10 +494,10 @@ export default function DissertationSurveyForm() {
                   <table className="min-w-full border-separate border-spacing-y-2">
                     <thead>
                       <tr>
-                        <th className="sticky left-0 z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 rounded-l-xl border border-slate-200">No</th>
-                        <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-white/90 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-slate-900 border-t border-b border-slate-200">Pertanyaan</th>
+                        <th className="sticky left-0 z-10 bg-orange-800 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-white rounded-l-xl border border-orange-700">No</th>
+                        <th className="sticky left-[3.5rem] sm:left-[4rem] z-10 bg-orange-800 backdrop-blur px-3 py-3 text-left text-sm font-semibold text-white border-t border-b border-orange-700">Pertanyaan</th>
                         {likertChoices.map((c) => (
-                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-slate-900 text-center border border-slate-200 whitespace-normal leading-tight">
+                          <th key={c.key} className="px-2 py-3 text-[10px] sm:text-xs font-semibold text-white bg-orange-800 text-center border border-orange-700 whitespace-normal leading-tight">
                             {c.text}
                           </th>
                         ))}
