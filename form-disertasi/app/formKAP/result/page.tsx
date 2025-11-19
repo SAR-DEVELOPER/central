@@ -19,6 +19,7 @@ interface Form2Response {
   id: string;
   nama: string;
   kap: string;
+  namaKlienKAP: string;
   jenisKelamin: string;
   umur: string;
   pendidikan: string;
@@ -286,6 +287,7 @@ export default function Form2ResultsPage() {
         'ID': response.id,
         'Nama': response.nama,
         'KAP': response.kap,
+        'Nama Klien KAP': response.namaKlienKAP,
         'Jenis Kelamin': response.jenisKelamin,
         'Umur': response.umur,
         'Pendidikan': response.pendidikan,
@@ -320,6 +322,7 @@ export default function Form2ResultsPage() {
       { wch: 36 }, // ID
       { wch: 20 }, // Nama
       { wch: 25 }, // KAP
+      { wch: 30 }, // Nama Klien KAP
       { wch: 15 }, // Jenis Kelamin
       { wch: 15 }, // Umur
       { wch: 12 }, // Pendidikan
@@ -600,6 +603,9 @@ export default function Form2ResultsPage() {
                         </div>
                         <div className="flex flex-wrap gap-4 text-sm text-slate-600">
                           <span>
+                            <strong>Nama Klien KAP:</strong> {response.namaKlienKAP}
+                          </span>
+                          <span>
                             <strong>Jenis Kelamin:</strong> {response.jenisKelamin}
                           </span>
                           <span>
@@ -624,7 +630,38 @@ export default function Form2ResultsPage() {
                   {/* Expanded Details */}
                   {expandedId === response.id && (
                     <div className="border-t border-slate-200 bg-slate-50/50 p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Respondent Identity */}
+                        <div>
+                          <h4 className="font-semibold text-slate-900 mb-3">Respondent Identity</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">Nama:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.nama}</span>
+                            </div>
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">KAP:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.kap}</span>
+                            </div>
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">Nama Klien KAP:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.namaKlienKAP}</span>
+                            </div>
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">Jenis Kelamin:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.jenisKelamin}</span>
+                            </div>
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">Umur:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.umur}</span>
+                            </div>
+                            <div className="flex items-start justify-between">
+                              <span className="text-slate-600">Pendidikan:</span>
+                              <span className="font-medium text-slate-900 text-right">{response.pendidikan}</span>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Answer Summary */}
                         <div>
                           <h4 className="font-semibold text-slate-900 mb-3">Answer Summary</h4>
@@ -646,33 +683,31 @@ export default function Form2ResultsPage() {
                         </div>
 
                         {/* Open-ended Responses */}
-                        {response.openEnded && (
-                          <div>
-                            <h4 className="font-semibold text-slate-900 mb-3">Open-ended Responses</h4>
-                            {response.openEnded.comments && (
-                              <div className="mb-3">
-                                <p className="text-xs font-medium text-slate-700 mb-1">Comments:</p>
-                                <p className="text-sm text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
-                                  {response.openEnded.comments}
-                                </p>
-                              </div>
-                            )}
-                            {response.openEnded.suggestions && (
-                              <div>
-                                <p className="text-xs font-medium text-slate-700 mb-1">Suggestions:</p>
-                                <p className="text-sm text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
-                                  {response.openEnded.suggestions}
-                                </p>
-                              </div>
-                            )}
-                            {!response.openEnded.comments && !response.openEnded.suggestions && (
-                              <p className="text-sm text-slate-500 italic">No open-ended responses</p>
-                            )}
-                          </div>
-                        )}
+                        <div>
+                          <h4 className="font-semibold text-slate-900 mb-3">Open-ended Responses</h4>
+                          {response.openEnded?.comments && (
+                            <div className="mb-3">
+                              <p className="text-xs font-medium text-slate-700 mb-1">Comments:</p>
+                              <p className="text-sm text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
+                                {response.openEnded.comments}
+                              </p>
+                            </div>
+                          )}
+                          {response.openEnded?.suggestions && (
+                            <div>
+                              <p className="text-xs font-medium text-slate-700 mb-1">Suggestions:</p>
+                              <p className="text-sm text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
+                                {response.openEnded.suggestions}
+                              </p>
+                            </div>
+                          )}
+                          {!response.openEnded?.comments && !response.openEnded?.suggestions && (
+                            <p className="text-sm text-slate-500 italic">No open-ended responses</p>
+                          )}
+                        </div>
 
                         {/* All Answers (Collapsible) */}
-                        <div className="md:col-span-2">
+                        <div className="md:col-span-3">
                           <details className="mt-4">
                             <summary className="cursor-pointer text-sm font-semibold text-slate-700 hover:text-slate-900">
                               View All Answers ({Object.keys(response.answers).length} questions)

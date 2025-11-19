@@ -25,6 +25,7 @@ export class Form2Service {
             const response = this.form2Repository.create({
                 nama: dto.identity.nama,
                 kap: dto.identity.kap,
+                namaKlienKAP: dto.identity.namaKlienKAP,
                 jenisKelamin: dto.identity.jenisKelamin,
                 umur: dto.identity.umur,
                 pendidikan: dto.identity.pendidikan,

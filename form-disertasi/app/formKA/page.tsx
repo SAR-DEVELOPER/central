@@ -3,6 +3,8 @@
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { sections as sectionsData, sections2 as sections2Data } from "./questions";
+import SearchableDropdown from "../../components/SearchableDropdown";
+import { COMPANIES } from "../../constants/companies";
 
 // -----------------------------
 // Helper Types
@@ -313,7 +315,14 @@ export default function DissertationSurveyForm() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <label htmlFor="perusahaan" className="text-sm font-medium text-slate-900">Perusahaan</label>
-                      <input id="perusahaan" required value={identity.perusahaan} onChange={(e) => setIdentity({ ...identity, perusahaan: e.target.value })} className="h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Masukkan nama perusahaan" />
+                      <SearchableDropdown
+                        id="perusahaan"
+                        required
+                        value={identity.perusahaan}
+                        onChange={(value) => setIdentity({ ...identity, perusahaan: value })}
+                        options={COMPANIES}
+                        placeholder="Pilih atau cari nama perusahaan"
+                      />
                     </div>
                     <div className="flex flex-col gap-2">
                       <label htmlFor="jabatan" className="text-sm font-medium text-slate-900">Jabatan</label>

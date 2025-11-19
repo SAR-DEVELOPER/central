@@ -12,6 +12,10 @@ class IdentityDto {
 
     @IsString()
     @IsNotEmpty()
+    namaKlienKAP: string;
+
+    @IsString()
+    @IsNotEmpty()
     @IsIn(['Laki-laki', 'Perempuan'])
     jenisKelamin: string;
 

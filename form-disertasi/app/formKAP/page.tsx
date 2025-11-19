@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { sections as sectionsData, sections2 as sections2Data } from "./questions";
+import SearchableDropdown from "../../components/SearchableDropdown";
+import { getKapClients, getKapName } from "../../constants/kapClients";
 
 // -----------------------------
 // Helper Types
@@ -35,7 +38,24 @@ interface Section {
 // Component
 // -----------------------------
 
-export default function DissertationSurveyForm() {
+function DissertationSurveyFormContent() {
+  // Get KAP ID from URL query parameter
+  const searchParams = useSearchParams();
+  const kapId = searchParams.get("kap");
+
+  // Get the client list for this KAP
+  const kapClients = useMemo(() => getKapClients(kapId), [kapId]);
+  
+  // Get the KAP name for this KAP ID
+  const kapName = useMemo(() => getKapName(kapId), [kapId]);
+  
+  // Pre-fill KAP field if kapId is provided
+  useEffect(() => {
+    if (kapName && kapId) {
+      setIdentity((prev) => ({ ...prev, kap: kapName }));
+    }
+  }, [kapName, kapId]);
+
   // --- Configurable form schema (you can change freely) ---
   const likertChoices: { key: LikertChoice; text: string }[] = [
     { key: "SS", text: "Sangat Setuju" },
@@ -66,6 +86,7 @@ export default function DissertationSurveyForm() {
   const [identity, setIdentity] = useState({
     nama: "",
     kap: "",
+    namaKlienKAP: "",
     jenisKelamin: "",
     umur: "",
     pendidikan: "",
@@ -98,8 +119,8 @@ export default function DissertationSurveyForm() {
       .filter(([, v]) => !v)
       .map(([k]) => k);
 
-    if (!identity.nama || !identity.kap) {
-      alert("Silakan lengkapi nama dan nama Kantor Akuntan Publik (KAP) Anda.");
+    if (!identity.nama || !identity.kap || !identity.namaKlienKAP) {
+      alert("Silakan lengkapi nama, nama Kantor Akuntan Publik (KAP), dan nama klien KAP Anda.");
       return;
     }
     if (!identity.jenisKelamin || !identity.umur || !identity.pendidikan) {
@@ -139,6 +160,7 @@ export default function DissertationSurveyForm() {
     console.group("👤 Respondent Identity");
     console.log("Nama:", identity.nama);
     console.log("Nama KAP:", identity.kap);
+    console.log("Nama Klien KAP:", identity.namaKlienKAP);
     console.log("Jenis Kelamin:", identity.jenisKelamin);
     console.log("Umur:", identity.umur);
     console.log("Pendidikan:", identity.pendidikan);
@@ -193,7 +215,7 @@ export default function DissertationSurveyForm() {
   }
 
   function clearForm() {
-    setIdentity({ nama: "", kap: "", jenisKelamin: "", umur: "", pendidikan: "", consent: false });
+    setIdentity({ nama: "", kap: "", namaKlienKAP: "", jenisKelamin: "", umur: "", pendidikan: "", consent: false });
     setOpenEnded({ comments: "", suggestions: "" });
     setAnswers((prev) => {
       const clone: Record<string, LikertChoice | ""> = { ...prev };
@@ -311,7 +333,26 @@ export default function DissertationSurveyForm() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <label htmlFor="kap" className="text-sm font-medium text-slate-900">Nama Kantor Akuntan Publik (KAP)</label>
-                      <input id="kap" required value={identity.kap} onChange={(e) => setIdentity({ ...identity, kap: e.target.value })} className="h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Masukkan nama KAP" />
+                      <input 
+                        id="kap" 
+                        required 
+                        value={identity.kap} 
+                        onChange={(e) => setIdentity({ ...identity, kap: e.target.value })} 
+                        disabled={!!kapId && !!kapName}
+                        className={`h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200 ${kapId && kapName ? 'bg-slate-100 cursor-not-allowed' : ''}`} 
+                        placeholder="Masukkan nama KAP" 
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="namaKlienKAP" className="text-sm font-medium text-slate-900">Nama Klien KAP</label>
+                      <SearchableDropdown
+                        id="namaKlienKAP"
+                        required
+                        value={identity.namaKlienKAP}
+                        onChange={(value) => setIdentity({ ...identity, namaKlienKAP: value })}
+                        options={kapClients}
+                        placeholder="Pilih atau cari nama klien KAP"
+                      />
                     </div>
                   </div>
 
@@ -631,5 +672,17 @@ export default function DissertationSurveyForm() {
         <div className="mx-auto max-w-5xl text-xs text-slate-700">© {new Date().getFullYear()} • Kuesioner Disertasi - DiluarPersegi </div>
       </footer>
     </div>
+  );
+}
+
+export default function DissertationSurveyForm() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-slate-700">Memuat formulir...</div>
+      </div>
+    }>
+      <DissertationSurveyFormContent />
+    </Suspense>
   );
 }

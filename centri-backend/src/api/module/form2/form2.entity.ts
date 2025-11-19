@@ -18,6 +18,9 @@ export class Form2Response {
     @Column({ type: 'varchar', length: 255 })
     kap: string;
 
+    @Column({ type: 'varchar', length: 255 })
+    namaKlienKAP: string;
+
     @Column({ type: 'varchar', length: 50 })
     jenisKelamin: string;
 
