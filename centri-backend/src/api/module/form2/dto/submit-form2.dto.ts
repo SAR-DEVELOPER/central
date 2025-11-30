@@ -11,8 +11,8 @@ class IdentityDto {
     kap: string;
 
     @IsString()
-    @IsNotEmpty()
-    namaKlienKAP: string;
+    @IsOptional()
+    namaKlienKAP?: string;
 
     @IsString()
     @IsNotEmpty()

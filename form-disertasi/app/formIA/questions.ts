@@ -112,7 +112,7 @@ export const sections2: Section[] = [
             { id: "D21", label: "SPI dan KAP menjadwalkan diskusi secara rutin selama proses audit untuk memastikan koordinasi atas hasil pekerjaan audit dan penyelesaian atas kendala dalam kegiatan audit secara efektif dan efisien." },
             { id: "D22", label: "KAP memberikan informasi kepada SPI mengenai waktu audit secara keseluruhan, termasuk area berisiko tinggi yang mempengaruhi laporan keuangan." },
             { id: "D23", label: "SPI dan KAP saling berbagi atau mengintegrasikan rencana auditnya." },
-            { id: "D24", label: "Terdapat dialog yang terbuka antara KAP dan SPI baik secara formal maupun informal tentang hal-hal yang mempengaruhi laporan keuangan, proses audit dan kualitas audit." },
+            { id: "D30", label: "Terdapat dialog yang terbuka antara KAP dan SPI baik secara formal maupun informal tentang hal-hal yang mempengaruhi laporan keuangan, proses audit dan kualitas audit." },
         ],
     },
 ];

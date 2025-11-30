@@ -5,12 +5,12 @@ export const KAP_NAMES: Record<string, string> = {
     kap_amir_abadi_jusuf_aryanto_mawar_dan_rekan: "KAP Amir Abadi Jusuf, Aryanto, Mawar dan Rekan (RSM)",
     kap_djoko_sidik_dan_indra: "KAP Djoko, Sidik dan Indra (Antea International)",
     kap_gani_sidiro_dan_handayani: "KAP Gani Sidiro dan Handayani",
-    kap_heliantono_dan_rekan: "KAP Heliantono dan Rekan (Parker Russel International)", // Update with actual KAP name
-    kap_kanaka_puradiredja_suhartono: "KAP Kanaka, Puradiredja, Suhartono (Nexia KPS)", // Update with actual KAP name
-    kap_lianaxenia_ramon_dan_rekan: "KAP Liana Ramon Xenia dan Rekan (Deloitte Touche Tohmatsu)", // Update with actual KAP name
-    kap_paul_hadiwinata_hidajat_arsono_retno_palilingan_dan_rekan: "KAP Paul Hadiwinata, Hidajat, Arsono, Retno, Palilingan & Rekan (PKF International)", // Update with actual KAP name
-    kap_purwanto_susanti_dan_surja: "KAP Purwanto, Susanti dan Surja (Ernst and Young)", // Update with actual KAP name
-    kap_rintis_jumadi_rianto_dan_rekan: "KAP Rintis, Jumadi, Rianto dan Rekan (Pricewaterhouse Coopers)", // Update with actual KAP name
+    kap_heliantono_dan_rekan: "KAP Heliantono dan Rekan (Parker Russel International)",
+    kap_kanaka_puradiredja_suhartono: "KAP Kanaka, Puradiredja, Suhartono (Nexia KPS)",
+    kap_lianaxenia_ramon_dan_rekan: "KAP Liana Ramon Xenia dan Rekan (Deloitte Touche Tohmatsu)",
+    kap_paul_hadiwinata_hidajat_arsono_retno_palilingan_dan_rekan: "KAP Paul Hadiwinata, Hidajat, Arsono, Retno, Palilingan & Rekan (PKF International)",
+    kap_purwanto_susanti_dan_surja: "KAP Purwanto, Susanti dan Surja (Ernst and Young)",
+    kap_rintis_jumadi_rianto_dan_rekan: "KAP Rintis, Jumadi, Rianto dan Rekan (Pricewaterhouse Coopers)",
 };
 
 // Mapping of KAP IDs to their client lists

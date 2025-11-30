@@ -71,4 +71,4 @@ ENV PORT=4000
 ENTRYPOINT ["/sbin/tini", "--"]
 
 # Start the application
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]

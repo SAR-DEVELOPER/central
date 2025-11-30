@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { sections as sectionsData, sections2 as sections2Data } from "./questions";
 import SearchableDropdown from "../../components/SearchableDropdown";
 import { getKapClients, getKapName } from "../../constants/kapClients";
@@ -39,6 +39,8 @@ interface Section {
 // -----------------------------
 
 function DissertationSurveyFormContent() {
+  const router = useRouter();
+  
   // Get KAP ID from URL query parameter
   const searchParams = useSearchParams();
   const kapId = searchParams.get("kap");
@@ -204,10 +206,8 @@ function DissertationSurveyFormContent() {
       const result = await response.json();
       console.log("✅ Server Response:", result);
 
-      alert("Terima kasih! Data Anda berhasil disimpan. Response ID: " + result.data.id);
-
-      // Optional: Clear form after successful submission
-      clearForm();
+      // Redirect to success page
+      router.push("/formKAP/success");
     } catch (error) {
       console.error("❌ Submission Error:", error);
       alert("Maaf, terjadi kesalahan saat mengirim data. Silakan coba lagi.");
