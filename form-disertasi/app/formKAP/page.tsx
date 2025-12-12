@@ -1,11 +1,10 @@
 "use client";
 
 import React, { Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { sections as sectionsData, sections2 as sections2Data } from "./questions";
 import SearchableDropdown from "../../components/SearchableDropdown";
-import { getKapClients, getKapName } from "../../constants/kapClients";
+import { getKapClients, getKapName, KAP_NAMES } from "../../constants/kapClients";
 
 // -----------------------------
 // Helper Types
@@ -40,23 +39,62 @@ interface Section {
 
 function DissertationSurveyFormContent() {
   const router = useRouter();
-  
-  // Get KAP ID from URL query parameter
-  const searchParams = useSearchParams();
-  const kapId = searchParams.get("kap");
 
-  // Get the client list for this KAP
-  const kapClients = useMemo(() => getKapClients(kapId), [kapId]);
-  
-  // Get the KAP name for this KAP ID
-  const kapName = useMemo(() => getKapName(kapId), [kapId]);
-  
-  // Pre-fill KAP field if kapId is provided
+  // Get KAP ID from URL query parameter (optional, for backward compatibility)
+  const searchParams = useSearchParams();
+  const urlKapId = searchParams.get("kap");
+
+  // State for selected KAP ID
+  const [selectedKapId, setSelectedKapId] = useState<string | null>(urlKapId || null);
+
+  // Get all KAP options (name -> ID mapping for display)
+  const kapOptions = useMemo(() => {
+    return Object.entries(KAP_NAMES).map(([id, name]) => ({
+      id,
+      name,
+    }));
+  }, []);
+
+  // Get the client list for the selected KAP (only show clients when a KAP is selected)
+  const kapClients = useMemo(() => {
+    if (!selectedKapId) {
+      return [];
+    }
+    return getKapClients(selectedKapId);
+  }, [selectedKapId]);
+
+  // Get the KAP name for the selected KAP ID
+  const kapName = useMemo(() => getKapName(selectedKapId), [selectedKapId]);
+
+  // Pre-fill KAP field if kapId is provided from URL (backward compatibility)
   useEffect(() => {
-    if (kapName && kapId) {
+    if (kapName && urlKapId && selectedKapId === urlKapId) {
       setIdentity((prev) => ({ ...prev, kap: kapName }));
     }
-  }, [kapName, kapId]);
+  }, [kapName, urlKapId, selectedKapId]);
+
+  // Handle KAP selection change
+  const handleKapChange = (kapNameValue: string) => {
+    // Update the KAP name in identity
+    setIdentity((prev) => {
+      const newIdentity = { ...prev, kap: kapNameValue };
+      // Clear client selection if KAP changed
+      if (prev.kap !== kapNameValue) {
+        newIdentity.namaKlienKAP = "";
+      }
+      return newIdentity;
+    });
+
+    // Find the KAP ID from the selected name (exact match)
+    const foundKap = kapOptions.find((kap) => kap.name === kapNameValue);
+    if (foundKap) {
+      setSelectedKapId(foundKap.id);
+    } else {
+      // If name doesn't match any KAP exactly, clear the KAP ID selection
+      // This allows free text but won't show client list until exact match
+      setSelectedKapId(null);
+    }
+  };
 
   // --- Configurable form schema (you can change freely) ---
   const likertChoices: { key: LikertChoice; text: string }[] = [
@@ -216,6 +254,7 @@ function DissertationSurveyFormContent() {
 
   function clearForm() {
     setIdentity({ nama: "", kap: "", namaKlienKAP: "", jenisKelamin: "", umur: "", pendidikan: "", consent: false });
+    setSelectedKapId(null);
     setOpenEnded({ comments: "", suggestions: "" });
     setAnswers((prev) => {
       const clone: Record<string, LikertChoice | ""> = { ...prev };
@@ -245,24 +284,52 @@ function DissertationSurveyFormContent() {
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-slate-200 bg-white shadow-lg backdrop-blur overflow-hidden">
               <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-slate-50">
-                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Surat Pengantar Penelitian</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Pengantar Penelitian</h2>
               </div>
               <div className="p-4 sm:p-6">
-                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
-                  <Image
-                    src="/form2-surat.png"
-                    alt="Surat Pengantar Penelitian Disertasi"
-                    width={800}
-                    height={1100}
-                    className="w-full h-auto object-contain"
-                    priority
-                  />
+                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white p-8 sm:p-12">
+                  <div className="prose prose-slate max-w-none text-slate-900">
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold text-center mb-8">KUESIONER PENELITIAN</h3>
+
+                    {/* Addressee */}
+                    <div className="mb-6 space-y-1">
+                      <p className="mb-0">Yth Bapak/Ibu</p>
+                      <p className="mb-0">Partner Kantor Akuntan Publik (KAP)</p>
+                      <p className="mb-0">di Tempat</p>
+                    </div>
+
+                    {/* Greeting */}
+                    <p className="mb-4">Dengan hormat,</p>
+
+                    {/* Main content */}
+                    <div className="space-y-4 text-justify leading-relaxed">
+                      <p className="mb-4">
+                        Perkenalkan saya Ahmad Zakie Mubarrok, mahasiswa Program Studi Doktoral Ilmu Akuntansi Fakultas Ekonomi dan Bisnis Universitas Padjadjaran, bermaksud memohon perkenan Bapak/Ibu untuk meluangkan waktu mengisi kuesioner yang dilampirkan, sebatas pengetahuan, pemahaman dan pengalaman Bapak/Ibu. Adapun penelitian ini berjudul <b>"Pengaruh Interaksi Komite Audit, Auditor Eksternal dan Auditor Internal terhadap Kualitas Pelaporan Keuangan (Survei pada Badan Usaha Milik Negara/BUMN)"</b>. Jawaban yang Bapak/Ibu berikan akan sangat membantu dalam penelitian ini, dan kuesioner ini hanya dapat digunakan apabila sudah terisi.
+                      </p>
+
+                      <p className="mb-4">
+                        Sehubungan dengan posisi Bapak/Ibu sebagai Partner Perikatan yang mengaudit laporan keuangan di BUMN atau Anak Perusahaan BUMN untuk tahun buku 2024, maka kuesioner yang diisi berkaitan dengan <b>Interaksi Komite Audit dengan Auditor Eksternal</b> dan <b>Interaksi Auditor Eksternal dengan Auditor Internal</b>.
+                      </p>
+
+                      <p className="mb-4">
+                        Perlu peneliti informasikan bahwa seluruh data dan informasi yang diperoleh dari jawaban atas kuesioner ini semata-mata hanya akan digunakan untuk kepentingan penelitian akademis. Kami menjamin kerahasiaan data dari jawaban kuesioner ini sesuai dengan kode etik penelitian.
+                      </p>
+
+                      <p className="mb-4">
+                        Demikian kami sampaikan, atas kesediaan waktu dan partisipasi Bapak/Ibu yang telah diberikan, saya mengucapkan terimakasih yang sebesar-besarnya. Kiranya hasil penelitian ini dapat berguna bagi pengembangan ilmu pengetahuan khususnya yang berkaitan dengan peningkatan tata kelola di BUMN.
+                      </p>
+                    </div>
+
+                    {/* Closing */}
+                    <div className="mt-2">
+                      <p className="mb-8">Hormat saya,</p>
+                      <p className="mb-0 text-2xl font-bold">Ahmad Zakie Mubarrok</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="p-6 sm:p-8 bg-slate-50 border-t border-slate-200">
-                <p className="text-sm text-slate-700 mb-6 text-center">
-                  Silakan baca surat pengantar di atas dengan seksama sebelum melanjutkan ke kuesioner.
-                </p>
                 <div className="flex justify-center">
                   <button
                     onClick={() => {
@@ -333,14 +400,13 @@ function DissertationSurveyFormContent() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <label htmlFor="kap" className="text-sm font-medium text-slate-900">Nama Kantor Akuntan Publik (KAP)</label>
-                      <input 
-                        id="kap" 
-                        required 
-                        value={identity.kap} 
-                        onChange={(e) => setIdentity({ ...identity, kap: e.target.value })} 
-                        disabled={!!kapId && !!kapName}
-                        className={`h-11 rounded-xl border border-slate-300 px-4 text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-200 ${kapId && kapName ? 'bg-slate-100 cursor-not-allowed' : ''}`} 
-                        placeholder="Masukkan nama KAP" 
+                      <SearchableDropdown
+                        id="kap"
+                        required
+                        value={identity.kap}
+                        onChange={handleKapChange}
+                        options={kapOptions.map((kap) => kap.name)}
+                        placeholder="Pilih atau cari nama KAP"
                       />
                     </div>
                     <div className="flex flex-col gap-2">
@@ -351,7 +417,7 @@ function DissertationSurveyFormContent() {
                         value={identity.namaKlienKAP}
                         onChange={(value) => setIdentity({ ...identity, namaKlienKAP: value })}
                         options={kapClients}
-                        placeholder="Pilih atau cari nama klien KAP"
+                        placeholder={selectedKapId ? "Pilih atau cari nama klien KAP" : "Pilih KAP terlebih dahulu"}
                       />
                     </div>
                   </div>

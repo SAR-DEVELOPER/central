@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { sections as sectionsData, sections2 as sections2Data } from "./questions";
 import SearchableDropdown from "../../components/SearchableDropdown";
@@ -228,24 +227,52 @@ export default function DissertationSurveyForm() {
           <div className="mx-auto max-w-4xl">
             <div className="rounded-2xl border border-slate-200 bg-white shadow-lg backdrop-blur overflow-hidden">
               <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-slate-50">
-                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Surat Pengantar Penelitian</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2 text-center">Pengantar Penelitian</h2>
               </div>
               <div className="p-4 sm:p-6">
-                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white">
-                  <Image
-                    src="/form1-surat.png"
-                    alt="Surat Pengantar Penelitian Disertasi"
-                    width={800}
-                    height={1100}
-                    className="w-full h-auto object-contain"
-                    priority
-                  />
+                <div className="relative w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm bg-white p-8 sm:p-12">
+                  <div className="prose prose-slate max-w-none text-slate-900">
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold text-center mb-8">KUESIONER PENELITIAN</h3>
+
+                    {/* Addressee */}
+                    <div className="mb-6 space-y-1">
+                      <p className="mb-0">Yth Bapak/Ibu</p>
+                      <p className="mb-0">Komite Audit Badan Usaha Milik Negara (BUMN) dan Anak Perusahaan BUMN</p>
+                      <p className="mb-0">di Tempat</p>
+                    </div>
+
+                    {/* Greeting */}
+                    <p className="mb-4">Dengan hormat,</p>
+
+                    {/* Main content */}
+                    <div className="space-y-4 text-justify leading-relaxed">
+                      <p className="mb-4">
+                        Perkenalkan saya Ahmad Zakie Mubarrok, mahasiswa Program Studi Doktoral Ilmu Akuntansi Fakultas Ekonomi dan Bisnis Universitas Padjadjaran, bermaksud memohon perkenan Bapak/Ibu untuk meluangkan waktu mengisi kuesioner yang dilampirkan, sebatas pengetahuan, pemahaman dan pengalaman Bapak/Ibu. Adapun penelitian ini berjudul <b>"Pengaruh Interaksi Komite Audit, Auditor Eksternal dan Auditor Internal terhadap Kualitas Pelaporan Keuangan (Survei pada Badan Usaha Milik Negara/BUMN)"</b>. Jawaban yang Bapak/Ibu berikan akan sangat membantu dalam penelitian ini, dan kuesioner ini hanya dapat digunakan apabila sudah terisi.
+                      </p>
+
+                      <p className="mb-4">
+                        Sehubungan dengan posisi Bapak/Ibu sebagai Komite Audit di BUMN maka kuesioner yang diisi berkaitan dengan <b>Interaksi Komite Audit dengan Auditor Eksternal</b> dan <b>Interaksi Komite Audit dengan Auditor Internal</b>.
+                      </p>
+
+                      <p className="mb-4">
+                        Perlu peneliti informasikan bahwa seluruh data dan informasi yang diperoleh dari jawaban atas kuesioner ini semata-mata hanya akan digunakan untuk kepentingan penelitian akademis. Kami menjamin kerahasiaan data dari jawaban kuesioner ini sesuai dengan kode etik penelitian.
+                      </p>
+
+                      <p className="mb-4">
+                        Demikian kami sampaikan, atas kesediaan waktu dan partisipasi Bapak/Ibu yang telah diberikan, saya mengucapkan terimakasih yang sebesar-besarnya. Kiranya hasil penelitian ini dapat berguna bagi pengembangan ilmu pengetahuan khususnya yang berkaitan dengan peningkatan tata kelola di BUMN.
+                      </p>
+                    </div>
+
+                    {/* Closing */}
+                    <div className="mt-2">
+                      <p className="mb-8">Hormat saya,</p>
+                      <p className="mb-0 text-2xl font-bold">Ahmad Zakie Mubarrok</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="p-6 sm:p-8 bg-slate-50 border-t border-slate-200">
-                <p className="text-sm text-slate-700 mb-6 text-center">
-                  Silakan baca surat pengantar di atas dengan seksama sebelum melanjutkan ke kuesioner.
-                </p>
                 <div className="flex justify-center">
                   <button
                     onClick={() => {
